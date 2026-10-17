@@ -1,0 +1,35 @@
+# Staging configuration only. Applying this Blueprint creates PAID resources.
+# Auto-deploy off does not prevent the initial deployment or Blueprint syncs.
+# Review costs and access settings in Render before applying. No model keys here.
+services:
+  - type: web
+    name: watchtower-guardian-staging
+    runtime: python
+    repo: https://github.com/watchtower-Ai/Watchtower-Ai
+    branch: watchtower-backend-v2
+    plan: 0.5c-512mb
+    region: frankfurt
+    numInstances: 1
+    autoDeployTrigger: 'off'
+    buildCommand: >-
+      python -m pip install -r requirements-dashboard.txt &&
+      python -m unittest -v test_scenario_registry.py test_watchtower_web.py
+    startCommand: >-
+      gunicorn 'watchtower_web:create_app()' --bind 0.0.0.0:$PORT
+      --workers 1 --threads 2 --timeout 30
+    healthCheckPath: /healthz
+    disk:
+      name: watchtower-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: WATCHTOWER_API_TOKEN
+        generateValue: true
+      - key: WATCHTOWER_DASHBOARD_DB
+        value: /var/data/watchtower/dashboard.sqlite3
+      - key: WATCHTOWER_DAILY_ANALYSIS_LIMIT
+        value: '0'
+      - key: PYTHONUNBUFFERED
+        value: '1'
+previews:
+  generation: 'off'
