@@ -31,12 +31,30 @@ AI provider failures appear as unavailable; absent model configuration is not_co
 The displayed configured flag does not prove a successful live inference.
 
 ## Tests and verification
-python -m unittest -v test_watchtower_web.py
-Fifteen local tests passed, including real localhost HTTP storage, authentication, duplicate
-handling, persistence, request budgeting, input validation and mocked provider failure/success.
-JavaScript syntax was checked with Node. A browser-rendering/interaction test, a real provider
-call, hosting deployment, dependency audit and public-service security review were not performed.
-These tests are separate from earlier registry/gateway/model tests and are not a combined suite.
+Run the complete backend unittest suite from the repository root:
+
+```bash
+python -m unittest discover -v
+```
+
+At commit 7f4270edf2633ff4278a9c9dc9ae10eb9d813677, all 31 tests passed locally:
+- test_watchtower_web.py: 15 tests, including loopback HTTP storage, authentication,
+  idempotency, persistence, request budgeting and explicitly mocked provider behavior.
+- test_scenario_registry.py: 10 tests for scenario validation and reviewed retrieval.
+- test_dashboard_json_regression.py: 6 test methods covering duplicate keys, non-finite
+  numbers, valid controls, rejected-request side effects and zero analyst calls.
+
+Source, test and fixture Git blob hashes were verified for that run. This suite does not
+include the separate Watchtower-Safe-Private API/gateway tests or live model inference.
+
+A separate session-local Playwright run passed 12 Chromium browser smoke checks against
+the real frontend, loopback backend and temporary SQLite database, with zero provider calls.
+Those browser checks are not committed here and are not run by unittest discovery.
+Firefox, WebKit and actual Safari/iOS testing remain unverified. Real provider calls,
+Render deployment, dependency audit and public-service security review remain outstanding.
+
+The current render.yaml build command still explicitly names the two older test modules;
+this documentation update does not change that deployment command.
 
 ## Hosting preparation, not deployment
 requirements-dashboard.txt supplies Gunicorn for a Linux staging host; audit and lock dependencies
@@ -55,5 +73,8 @@ No external service is created by committing these files. Render connection must
 watchtower_web.py: WSGI API and local launch command; imports existing backend.py only for inference.
 web/index.html: responsive blue-eye interface with real API polling and truthful capability labels.
 test_watchtower_web.py: 15 local tests, with provider responses explicitly mocked.
+scenario_registry.py and scenarios.json: reviewed-retrieval implementation and draft scenario data.
+test_scenario_registry.py: 10 scenario validation and retrieval tests.
+test_dashboard_json_regression.py: 6 JSON parser and WSGI regression test methods.
 requirements-dashboard.txt: staging server dependency, not a production lockfile.
 DASHBOARD.md: these instructions and limitations.
