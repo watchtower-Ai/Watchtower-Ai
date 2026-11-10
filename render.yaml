@@ -13,7 +13,7 @@ services:
     autoDeployTrigger: 'off'
     buildCommand: >-
       python -m pip install -r requirements-dashboard.txt &&
-      python -m unittest -v test_scenario_registry.py test_watchtower_web.py
+      python -m unittest -v test_scenario_registry.py test_watchtower_web.py test_money_gate.py
     startCommand: >-
       gunicorn 'watchtower_web:create_app()' --bind 0.0.0.0:$PORT
       --workers 1 --threads 2 --timeout 30

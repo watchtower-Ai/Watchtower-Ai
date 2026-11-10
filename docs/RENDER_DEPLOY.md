@@ -33,7 +33,7 @@ Rates and availability can change. This document does not authorize spending.
    Do not delete a service or disk as a troubleshooting shortcut: that can affect stored data.
 
 ## What the Blueprint does
-- Installs the existing dashboard requirements and runs the two named unit-test suites.
+- Installs the existing dashboard requirements and runs the named unit-test modules, including money limits.
 - Starts Gunicorn using watchtower_web:create_app(), binding to Render's PORT.
 - Runs one instance with one worker and two threads, appropriate for the bounded SQLite prototype.
 - Places the SQLite database under the persistent disk mount, not the temporary source filesystem.
@@ -57,8 +57,10 @@ Before storing anything sensitive, add suitable access restrictions/private acce
 rate limits, headers, retention, backups, dependency versions and the single-user auth design.
 Use synthetic non-sensitive data only until that review. Do not publish the dashboard token.
 The generated token gives API access, not separate operator/admin roles.
-There is no image-assessment HTTP route, autonomous collector, tool blocking, deployed decoy,
+There is no image-assessment HTTP route, autonomous collector, deployed decoy,
 independent shutdown service, or unrestricted RSI in this dashboard configuration.
+Money-limit checks can allow or hold a refund or discount. They do not execute the action,
+and an allow is not a guarantee that the action is safe.
 
 ## Enabling real text AI later requires a separate reviewed step
 Configure OPENAI_API_KEY and a compatible OPENAI_MODEL only in Render's secret/environment
